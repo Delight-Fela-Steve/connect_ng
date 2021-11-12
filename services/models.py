@@ -9,11 +9,16 @@ class Service(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits = 10, decimal_places = 2)
 
+    def __str__(self):
+        return self.name
+
 class Booking(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="bookings")
+    buyer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="bookings")
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     pending = models.BooleanField(blank=True, null=True)
     accepted = models.BooleanField(blank=True, null=True)
     paid = models.BooleanField(blank=True, null=True)
 
+    def __str__(self):
+        return self.service.name
 
