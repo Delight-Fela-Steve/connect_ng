@@ -51,7 +51,7 @@ def user_service(request, id, user_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == "GET":
-        serializer = ServiceSerializer(service)
+        serializer = ServiceSerializer(service, many=True)
         return Response(serializer.data)
 
     elif request.method == "PUT":

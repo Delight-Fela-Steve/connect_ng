@@ -15,10 +15,10 @@ class Service(models.Model):
 class Booking(models.Model):
     buyer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="bookings")
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    pending = models.BooleanField(blank=True, null=True)
+    pending = models.BooleanField(blank=True, null=True, default=True)
     accepted = models.BooleanField(blank=True, null=True)
     paid = models.BooleanField(blank=True, null=True)
 
-    def __str__(self):
-        return self.service.name
+    # def __str__(self):
+    #     return self.service.name
 
