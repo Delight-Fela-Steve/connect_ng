@@ -5,25 +5,30 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from .models import UserProfile
+# drf_stuff
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # Create your views here.
 
 # Handles sign up
 @csrf_exempt
+@api_view(["POST"])
 def register(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        first_name = request.POST["first_name"]
-        last_name = request.POST["last_name"]
+        username = request.data["username"]
+        email = request.data["email"]
+        first_name = request.data["first_name"]
+        last_name = request.data["last_name"]
 
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return JsonResponse( {
+            return Response( {
                 "message": "Passwords must match."
-            }, safe=False)
+            })
 
         # Attempt to create new user
         try:
@@ -33,39 +38,41 @@ def register(request):
             user_profile = UserProfile.objects.create(user=user,first_name=first_name, last_name=last_name,)
             user_profile.save()
         except IntegrityError:
-            return JsonResponse({
+            return Response({
                 "message": "Username already taken."
-            }, safe=False)
+            }, status=status.HTTP_409_CONFLICT)
         login(request, user)
-        return JsonResponse({"message":"Registered Successfully"}, safe=False)
+        return Response({"message":"Registered Successfully"}, status=status.HTTP_200_OK)
     else:
-        return JsonResponse({"message":"Bad Request"}, safe=False)
+        return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Handles login
 @csrf_exempt
+@api_view(["POST"])
 def sign_in(request):
     if request.method == "POST":
 
         # Attempt to sign user in
-        username = request.POST["username"]
-        password = request.POST["password"]
+        username = request.data["username"]
+        password = request.data["password"]
         user = authenticate(request, username=username, password=password)
 
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return JsonResponse({"message":"Logged in successfully"}, safe=False)
+            return Response({"message":"Logged in successfully"}, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({
+            return Response({
                 "message": "Invalid username and/or password."
-            }, safe=False)
+            }, status=status.HTTP_403_FORBIDDEN)
     else:
-        return JsonResponse({"message":"Bad Request"}, safe=False)
+        return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
 # Handles logout
 @csrf_exempt
+@api_view(["GET"])
 def sign_out(request):
     logout(request)
-    return JsonResponse({"message":"Logged out successfully"}, safe=False)
+    return Response({"message":"Logged out successfully"}, status=status.HTTP_200_OK)
 

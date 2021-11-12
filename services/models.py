@@ -19,6 +19,6 @@ class Booking(models.Model):
     accepted = models.BooleanField(blank=True, null=True)
     paid = models.BooleanField(blank=True, null=True)
 
-    # def __str__(self):
-    #     return self.service.name
+    def __str__(self):
+        return self.service.name
 
