@@ -27,7 +27,30 @@ def service(request, id):
         return Response(serializer.data)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
+def book(request, user_id, id):
+    if not request.user.is_authenticated:
+        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+    try:
+        user = UserProfile.objects.get(pk=user_id)
+    except user.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # Confirm if the signed in user is not the owner of the service being checked
+    if request.user.username !=  user.user.username:
+        try:
+            service = Service.objects.get(pk=id)
+        except service.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == "POST":
+        booking = Booking.objects.create(buyer=user, service=service)
+        booking.save()
+        serializer = BookingSerializer(booking)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(["GET", "POST"])
 def user_services(request, user_id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -44,9 +67,14 @@ def user_services(request, user_id):
         service = Service.objects.filter(seller=user)
         serializer = ServiceSerializer(service, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == "POST":
+        serializer = ServiceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(["GET", "PUT", "DELETE"])
+@api_view(["GET","PUT", "DELETE"])
 def user_service(request, id, user_id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
