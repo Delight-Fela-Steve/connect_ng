@@ -23,8 +23,8 @@ def register(request):
         last_name = request.data["last_name"]
 
         # Ensure password matches confirmation
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
+        password = request.data["password"]
+        confirmation = request.data["confirmation"]
         if password != confirmation:
             return Response( {
                 "message": "Passwords must match."

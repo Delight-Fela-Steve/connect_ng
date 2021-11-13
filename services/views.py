@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from authenticate.models import UserProfile
 from .models import Service, Booking
 from .serializers import ServiceSerializer, BookingSerializer
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -49,7 +50,7 @@ def book(request, user_id, id):
         serializer = BookingSerializer(booking)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
-
+@csrf_exempt
 @api_view(["GET", "POST"])
 def user_services(request, user_id):
     if not request.user.is_authenticated:
@@ -58,7 +59,6 @@ def user_services(request, user_id):
         user = UserProfile.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     # Confirm if the signed in user is the owner of the service being checked
     if request.user.username !=  user.user.username:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
@@ -67,7 +67,9 @@ def user_services(request, user_id):
         service = Service.objects.filter(seller=user)
         serializer = ServiceSerializer(service, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     elif request.method == "POST":
+        print(request.data["seller"])
         serializer = ServiceSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
