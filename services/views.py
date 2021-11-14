@@ -6,9 +6,14 @@ from authenticate.models import UserProfile
 from .models import Service, Booking
 from .serializers import ServiceSerializer, BookingSerializer
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 
-# Create your views here.
+def users(request):
+    users = UserProfile.objects.all()
+    for user in users:
+        print(user.id, user.user.email)
+    
 @api_view(["GET"])
 def services(request):
     if request.method == "GET":
