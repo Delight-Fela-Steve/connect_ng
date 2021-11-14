@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 
 
 def users(request):
-    users = UserProfile.objects.all()
+    users = User.objects.all()
     for user in users:
         print(user.id, user.user.email)
     
@@ -39,7 +39,7 @@ def book(request, id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         print(request.user.username)
-        user = UserProfile.objects.get(user__email=request.user.email)
+        user = User.objects.get(user__email=request.user.email)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     try:
@@ -62,7 +62,7 @@ def user_services(request, user_id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
-        user = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     # Confirm if the signed in user is the owner of the service being checked
@@ -87,7 +87,7 @@ def user_service(request, id, user_id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
-        user = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     try:
@@ -121,7 +121,7 @@ def seller_bookings(request, user_id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
-        user = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -140,7 +140,7 @@ def seller_booking(request, id, user_id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
-        user = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
@@ -174,7 +174,7 @@ def buyer_bookings(request, user_id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
-        user = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     print(request.user.username, user.user.username)
@@ -194,7 +194,7 @@ def buyer_booking(request, id, user_id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     
     try:
-        user = UserProfile.objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
