@@ -34,7 +34,7 @@ def book(request, id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         print(request.user.username)
-        user = UserProfile.objects.get(user__username=request.user.username)
+        user = UserProfile.objects.get(user__email=request.user.email)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     try:
@@ -43,7 +43,6 @@ def book(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == "POST":
-        print(user)
         # Confirm if the signed in user is not the owner of the service being checked
         if request.user.id !=  service.seller.user.id:
             booking, created = Booking.objects.get_or_create(buyer=user, service=service)
