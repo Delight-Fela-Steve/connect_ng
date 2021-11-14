@@ -12,6 +12,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
     buyer = serializers.StringRelatedField()
+    service = serializers.StringRelatedField()
     class Meta:
         model = Booking
         fields = '__all__'

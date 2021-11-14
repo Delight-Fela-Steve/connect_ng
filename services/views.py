@@ -29,28 +29,30 @@ def service(request, id):
 
 
 @api_view(["POST"])
-def book(request, user_id, id):
+def book(request, id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
-        user = UserProfile.objects.get(pk=user_id)
+        print(request.user.username)
+        user = UserProfile.objects.get(user__username=request.user.username)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
-    # Confirm if the signed in user is not the owner of the service being checked
-    if request.user.username !=  user.user.username:
-        try:
-            service = Service.objects.get(pk=id)
-        except service.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    try:
+        service = Service.objects.get(pk=id)
+    except service.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == "POST":
-        booking = Booking.objects.create(buyer=user, service=service)
-        booking.save()
-        serializer = BookingSerializer(booking)
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        print(user)
+        # Confirm if the signed in user is not the owner of the service being checked
+        if request.user.id !=  service.seller.user.id:
+            booking, created = Booking.objects.get_or_create(buyer=user, service=service)
+            serializer = BookingSerializer(booking)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response({"message":"You cannot book your own service",}, status=status.HTTP_403_FORBIDDEN)
 
-@csrf_exempt
+
 @api_view(["GET", "POST"])
 def user_services(request, user_id):
     if not request.user.is_authenticated:
@@ -69,8 +71,8 @@ def user_services(request, user_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == "POST":
-        print(request.data["seller"])
-        serializer = ServiceSerializer(data=request.data)
+        service = Service(seller=user)
+        serializer = ServiceSerializer(service, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -171,13 +173,13 @@ def buyer_bookings(request, user_id):
         user = UserProfile.objects.get(pk=user_id)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
+    print(request.user.username, user.user.username)
     # Confirm if the signed in user is the owner of the bookings being checked
     if request.user.username !=  user.user.username:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == "GET":
-        bookings = Booking.objects.filter(service__seller=user)
+        bookings = Booking.objects.filter(buyer=user)
         serializer = BookingSerializer(bookings, many=True)
         return Response(serializer.data, status= status.HTTP_200_OK)
     
