@@ -88,6 +88,8 @@ DATABASES = {
 prod_db  =  dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
 
+AUTH_USER_MODEL = "authenticate.User"
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -106,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = (('django.contrib.auth.backends.ModelBackend'),)
+AUTHENTICATION_BACKENDS = (('django.contrib.auth.backends.ModelBackend'),('authenticate.models.CustomBackend'),)
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

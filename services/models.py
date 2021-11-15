@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from authenticate.models import UserProfile
 # Create your models here.
 
 class Service(models.Model):

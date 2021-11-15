@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from authenticate.models import UserProfile
 from .models import Service, Booking
 from .serializers import ServiceSerializer, BookingSerializer
 from django.views.decorators.csrf import csrf_exempt

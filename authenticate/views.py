@@ -2,9 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.db import IntegrityError
-from .models import UserProfile
 # drf_stuff
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -26,16 +25,13 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(email, password)
+            user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
             user.save()
-            # Create user profile at the same time
-            user_profile = UserProfile.objects.create(user=user,first_name=first_name, last_name=last_name,)
-            user_profile.save()
         except IntegrityError:
             return Response({
                 "message": "email already taken."
             }, status=status.HTTP_409_CONFLICT)
-        login(request, user)
+        login(request, user, backend='authenticate.models.CustomBackend')
         return Response({"message":"Registered Successfully"}, status=status.HTTP_200_OK)
     else:
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
@@ -54,7 +50,7 @@ def sign_in(request):
 
         # Check if authentication successful
         if user is not None:
-            login(request, user)
+            login(request, user, backend='authenticate.models.CustomBackend')
             return Response({"message":"Logged in successfully"}, status=status.HTTP_200_OK)
         else:
             return Response({
