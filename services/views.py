@@ -1,13 +1,14 @@
 from django.shortcuts import render
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from .models import Service, Booking
 from .serializers import ServiceSerializer, BookingSerializer
 from django.views.decorators.csrf import csrf_exempt
 from users.models import User
 from django.core.exceptions import ObjectDoesNotExist
+
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -36,9 +37,8 @@ def service(request, id):
 
 
 @api_view(["POST"])
+@permission_classes((IsAuthenticated))
 def book(request, id):
-    if not request.user.is_authenticated:
-        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(email=request.user.email)
     except ObjectDoesNotExist:
@@ -59,9 +59,8 @@ def book(request, id):
 
 
 @api_view(["GET", "POST"])
+@permission_classes((IsAuthenticated,))
 def user_services(request, user_id):
-    if not request.user.is_authenticated:
-        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
@@ -84,9 +83,8 @@ def user_services(request, user_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET","PUT", "DELETE"])
+@permission_classes((IsAuthenticated))
 def user_service(request, id, user_id):
-    if not request.user.is_authenticated:
-        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
@@ -118,9 +116,8 @@ def user_service(request, id, user_id):
 
 
 @api_view(["GET"])
+@permission_classes((IsAuthenticated))
 def seller_bookings(request, user_id):
-    if not request.user.is_authenticated:
-        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
@@ -137,9 +134,8 @@ def seller_bookings(request, user_id):
         
 
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes((IsAuthenticated))
 def seller_booking(request, id, user_id):
-    if not request.user.is_authenticated:
-        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
@@ -171,9 +167,8 @@ def seller_booking(request, id, user_id):
     
 
 @api_view(["GET"])
+@permission_classes((IsAuthenticated))
 def buyer_bookings(request, user_id):
-    if not request.user.is_authenticated:
-        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
@@ -190,10 +185,8 @@ def buyer_bookings(request, user_id):
     
 
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes((IsAuthenticated))
 def buyer_booking(request, id, user_id):
-    if not request.user.is_authenticated:
-        return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
-    
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:

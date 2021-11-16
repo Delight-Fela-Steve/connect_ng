@@ -33,14 +33,14 @@ def register(request):
                 "message": "email already taken."
             }, status=status.HTTP_409_CONFLICT)
         login(request, user)
-        token=Token.objects.get(user=user).key
-        return Response({"message":"Registered Successfully","token":token}, status=status.HTTP_200_OK)
+        token=Token.objects.get(user=user)
+        key=token.key
+        return Response({"message":"Registered Successfully","token":key}, status=status.HTTP_200_OK)
     else:
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Handles login
-@csrf_exempt
 @api_view(["POST"])
 def sign_in(request):
     if request.method == "POST":
@@ -58,7 +58,7 @@ def sign_in(request):
                 key=token.key
             except ObjectDoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-            return Response({"message":"Logged in successfully","token":token}, status=status.HTTP_200_OK)
+            return Response({"message":"Logged in successfully","token":key}, status=status.HTTP_200_OK)
         else:
             return Response({
                 "message": "Invalid email and/or password."
