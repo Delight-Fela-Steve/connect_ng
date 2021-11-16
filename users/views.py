@@ -9,6 +9,7 @@ from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 # Create your views here.
 
@@ -31,7 +32,8 @@ def register(request):
                 "message": "email already taken."
             }, status=status.HTTP_409_CONFLICT)
         login(request, user)
-        return Response({"message":"Registered Successfully"}, status=status.HTTP_200_OK)
+        token=Token.objects.get(user=user).key
+        return Response({"message":"Registered Successfully","token":token}, status=status.HTTP_200_OK)
     else:
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,7 +52,9 @@ def sign_in(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return Response({"message":"Logged in successfully"}, status=status.HTTP_200_OK)
+            try:
+                token=Token.objects.get(user=user).key
+            return Response({"message":"Logged in successfully","token":token}, status=status.HTTP_200_OK)
         else:
             return Response({
                 "message": "Invalid email and/or password."
