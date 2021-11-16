@@ -15,7 +15,6 @@ from rest_framework.authtoken.models import Token
 # Create your views here.
 
 # Handles sign up
-@csrf_exempt
 @api_view(["POST"])
 def register(request):
     if request.method == "POST":
@@ -67,7 +66,6 @@ def sign_in(request):
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
 # Handles logout
-@csrf_exempt
 @api_view(["GET"])
 def sign_out(request):
     logout(request)
