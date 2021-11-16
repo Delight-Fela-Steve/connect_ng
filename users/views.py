@@ -8,14 +8,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 # drf_stuff
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 
 # Handles sign up
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def register(request):
     if request.method == "POST":
         email = request.data["email"]
@@ -41,6 +43,7 @@ def register(request):
 
 # Handles login
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def sign_in(request):
     if request.method == "POST":
 
@@ -67,6 +70,7 @@ def sign_in(request):
 
 # Handles logout
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def sign_out(request):
     logout(request)
     return Response({"message":"Logged out successfully"}, status=status.HTTP_200_OK)
