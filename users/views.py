@@ -31,6 +31,7 @@ def register(request):
                 "message": "email already taken."
             }, status=status.HTTP_409_CONFLICT)
         login(request, user)
+        print(request.headers)
         return Response({"message":"Registered Successfully"}, status=status.HTTP_200_OK)
     else:
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
@@ -41,7 +42,7 @@ def register(request):
 @api_view(["POST"])
 def sign_in(request):
     if request.method == "POST":
-
+        # token = request.headers["Cookie"].replace("csrftoken=","")
         # Attempt to sign user in
         email = request.data["email"]
         password = request.data["password"]
@@ -49,6 +50,7 @@ def sign_in(request):
 
         # Check if authentication successful
         if user is not None:
+            print(request.headers)
             login(request, user)
             return Response({"message":"Logged in successfully"}, status=status.HTTP_200_OK)
         else:

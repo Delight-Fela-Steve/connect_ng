@@ -48,7 +48,7 @@ def book(request, id):
     
     if request.method == "POST":
         # Confirm if the signed in user is not the owner of the service being checked
-        if request.user.id !=  service.seller.user.id:
+        if request.user.id !=  service.seller.id:
             booking, created = Booking.objects.get_or_create(buyer=user, service=service)
             serializer = BookingSerializer(booking)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
