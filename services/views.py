@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .models import Service, Booking
 from .serializers import ServiceSerializer, BookingSerializer
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
+from users.models import User
 
 
 def users(request):
@@ -37,8 +37,7 @@ def book(request, id):
     if not request.user.is_authenticated:
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
-        print(request.user.username)
-        user = User.objects.get(user__email=request.user.email)
+        user = User.objects.get(email=request.user.email)
     except user.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     try:

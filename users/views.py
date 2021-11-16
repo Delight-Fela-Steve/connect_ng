@@ -1,3 +1,4 @@
+from .models import User
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -19,8 +20,6 @@ def register(request):
         email = request.data["email"]
         first_name = request.data["first_name"]
         last_name = request.data["last_name"]
-
-        # Ensure password matches confirmation
         password = request.data["password"]
 
         # Attempt to create new user
@@ -31,7 +30,7 @@ def register(request):
             return Response({
                 "message": "email already taken."
             }, status=status.HTTP_409_CONFLICT)
-        login(request, user, backend='authenticate.models.CustomBackend')
+        login(request, user)
         return Response({"message":"Registered Successfully"}, status=status.HTTP_200_OK)
     else:
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
@@ -50,7 +49,7 @@ def sign_in(request):
 
         # Check if authentication successful
         if user is not None:
-            login(request, user, backend='authenticate.models.CustomBackend')
+            login(request, user)
             return Response({"message":"Logged in successfully"}, status=status.HTTP_200_OK)
         else:
             return Response({

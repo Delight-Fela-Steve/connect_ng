@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "connect-ng.herokuapp.com"]
 # Application definition
 
 INSTALLED_APPS = [
-    'authenticate',
+    'users',
     'services',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -88,7 +88,7 @@ DATABASES = {
 prod_db  =  dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
 
-AUTH_USER_MODEL = "authenticate.User"
+AUTH_USER_MODEL = "users.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -108,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = (('django.contrib.auth.backends.ModelBackend'),('authenticate.models.CustomBackend'),)
+AUTHENTICATION_BACKENDS = (('django.contrib.auth.backends.ModelBackend'),)
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
