@@ -6,12 +6,13 @@ from .models import Service, Booking
 from .serializers import ServiceSerializer, BookingSerializer
 from django.views.decorators.csrf import csrf_exempt
 from users.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def users(request):
     users = User.objects.all()
     for user in users:
-        print(user.id, user.user.email)
+        print(user.id, user.id.email)
     
 @api_view(["GET"])
 def services(request):
@@ -24,7 +25,7 @@ def services(request):
 def service(request, id):
     try:
         service = Service.objects.get(pk=id)
-    except service.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == "GET":
@@ -38,11 +39,11 @@ def book(request, id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(email=request.user.email)
-    except user.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     try:
         service = Service.objects.get(pk=id)
-    except service.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == "POST":
@@ -61,10 +62,10 @@ def user_services(request, user_id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
-    except user.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     # Confirm if the signed in user is the owner of the service being checked
-    if request.user.username !=  user.user.username:
+    if request.user.id !=  user.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
 
     if request.method == "GET":
@@ -86,15 +87,15 @@ def user_service(request, id, user_id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
-    except user.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     try:
         service = Service.objects.get(pk=id, seller=user)
-    except service.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     # Confirm if the signed in user is the owner of the service being checked
-    if request.user.username !=  service.seller.user.username:
+    if request.user.id !=  service.seller.user.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == "GET":
@@ -120,11 +121,11 @@ def seller_bookings(request, user_id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
-    except user.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     # Confirm if the signed in user is the owner of the bookings being checked
-    if request.user.username !=  user.user.username:
+    if request.user.id !=  user.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == "GET":
@@ -139,16 +140,16 @@ def seller_booking(request, id, user_id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
-    except user.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     # Confirm if the signed in user is the owner of the booking being checked
-    if request.user.username !=  user.user.username:
+    if request.user.id !=  user.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
     
     try:
         booking = Booking.objects.get(pk=id, service__seller=user)
-    except booking.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
@@ -173,11 +174,11 @@ def buyer_bookings(request, user_id):
         return Response({"message":"Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects.get(pk=user_id)
-    except user.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    print(request.user.username, user.user.username)
+    print(request.user.id, user.id)
     # Confirm if the signed in user is the owner of the bookings being checked
-    if request.user.username !=  user.user.username:
+    if request.user.id !=  user.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == "GET":
@@ -193,16 +194,16 @@ def buyer_booking(request, id, user_id):
     
     try:
         user = User.objects.get(pk=user_id)
-    except user.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     # Confirm if the signed in user is the owner of the booking being checked
-    if request.user.username !=  user.user.username:
+    if request.user.id !=  user.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
     
     try:
         booking = Booking.objects.get(pk=id, buyer=user)
-    except booking.DoesNotExist:
+    except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
