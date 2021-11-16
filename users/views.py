@@ -2,6 +2,7 @@ from .models import User
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 # from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -9,6 +10,7 @@ from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 # Create your views here.
 
@@ -31,8 +33,8 @@ def register(request):
                 "message": "email already taken."
             }, status=status.HTTP_409_CONFLICT)
         login(request, user)
-        print(request.headers)
-        return Response({"message":"Registered Successfully"}, status=status.HTTP_200_OK)
+        token=Token.objects.get(user=user).key
+        return Response({"message":"Registered Successfully","token":token}, status=status.HTTP_200_OK)
     else:
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -42,7 +44,7 @@ def register(request):
 @api_view(["POST"])
 def sign_in(request):
     if request.method == "POST":
-        # token = request.headers["Cookie"].replace("csrftoken=","")
+
         # Attempt to sign user in
         email = request.data["email"]
         password = request.data["password"]
@@ -50,9 +52,13 @@ def sign_in(request):
 
         # Check if authentication successful
         if user is not None:
-            print(request.headers)
             login(request, user)
-            return Response({"message":"Logged in successfully"}, status=status.HTTP_200_OK)
+            try:
+                token=Token.objects.get(user=user)
+                key=token.key
+            except ObjectDoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"message":"Logged in successfully","token":token}, status=status.HTTP_200_OK)
         else:
             return Response({
                 "message": "Invalid email and/or password."
