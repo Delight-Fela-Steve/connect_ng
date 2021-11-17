@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "connect-ng.herokuapp.com"]
 INSTALLED_APPS = [
     'users',
     'services',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'rest_framework',
-    'corsheaders',
+    
 ]
 
 MIDDLEWARE = [
