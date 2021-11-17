@@ -34,7 +34,7 @@ def service(request, id):
 
 
 @api_view(["POST"])
-@permission_classes((IsAuthenticated))
+@permission_classes([IsAuthenticated])
 def book(request, id):
     try:
         user = User.objects.get(email=request.user.email)
@@ -80,7 +80,7 @@ def user_services(request, user_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET","PUT", "DELETE"])
-@permission_classes((IsAuthenticated))
+@permission_classes([IsAuthenticated])
 def user_service(request, id, user_id):
     try:
         user = User.objects.get(pk=user_id)
@@ -92,7 +92,8 @@ def user_service(request, id, user_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     # Confirm if the signed in user is the owner of the service being checked
-    if request.user.id !=  service.seller.user.id:
+    print(request.user.id)
+    if request.user.id !=  service.seller.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == "GET":
@@ -113,7 +114,7 @@ def user_service(request, id, user_id):
 
 
 @api_view(["GET"])
-@permission_classes((IsAuthenticated))
+@permission_classes([IsAuthenticated])
 def seller_bookings(request, user_id):
     try:
         user = User.objects.get(pk=user_id)
@@ -131,7 +132,7 @@ def seller_bookings(request, user_id):
         
 
 @api_view(["GET", "PUT", "DELETE"])
-@permission_classes((IsAuthenticated))
+@permission_classes([IsAuthenticated])
 def seller_booking(request, id, user_id):
     try:
         user = User.objects.get(pk=user_id)
@@ -164,7 +165,7 @@ def seller_booking(request, id, user_id):
     
 
 @api_view(["GET"])
-@permission_classes((IsAuthenticated))
+@permission_classes([IsAuthenticated])
 def buyer_bookings(request, user_id):
     try:
         user = User.objects.get(pk=user_id)
@@ -182,7 +183,7 @@ def buyer_bookings(request, user_id):
     
 
 @api_view(["GET", "PUT", "DELETE"])
-@permission_classes((IsAuthenticated))
+@permission_classes([IsAuthenticated])
 def buyer_booking(request, id, user_id):
     try:
         user = User.objects.get(pk=user_id)
