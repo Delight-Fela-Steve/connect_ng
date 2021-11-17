@@ -26,7 +26,7 @@ def service(request, id):
     try:
         service = Service.objects.get(pk=id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
     
     if request.method == "GET":
         serializer = ServiceSerializer(service)
@@ -39,11 +39,11 @@ def book(request, id):
     try:
         user = User.objects.get(email=request.user.email)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
     try:
         service = Service.objects.get(pk=id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
     
     if request.method == "POST":
         # Confirm if the signed in user is not the owner of the service being checked
@@ -61,7 +61,7 @@ def user_services(request, user_id):
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
     # Confirm if the signed in user is the owner of the service being checked
     if request.user.id !=  user.id:
         return Response({"message":"Invalid User"}, status=status.HTTP_403_FORBIDDEN)
@@ -85,11 +85,11 @@ def user_service(request, id, user_id):
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
     try:
         service = Service.objects.get(pk=id, seller=user)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
     # Confirm if the signed in user is the owner of the service being checked
     print(request.user.id)
@@ -119,7 +119,7 @@ def seller_bookings(request, user_id):
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
     # Confirm if the signed in user is the owner of the bookings being checked
     if request.user.id !=  user.id:
@@ -137,7 +137,7 @@ def seller_booking(request, id, user_id):
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
     
     # Confirm if the signed in user is the owner of the booking being checked
     if request.user.id !=  user.id:
@@ -146,7 +146,7 @@ def seller_booking(request, id, user_id):
     try:
         booking = Booking.objects.get(pk=id, service__seller=user)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
         serializer = BookingSerializer(booking)
@@ -170,7 +170,7 @@ def buyer_bookings(request, user_id):
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
     print(request.user.id, user.id)
     # Confirm if the signed in user is the owner of the bookings being checked
     if request.user.id !=  user.id:
@@ -188,7 +188,7 @@ def buyer_booking(request, id, user_id):
     try:
         user = User.objects.get(pk=user_id)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
     # Confirm if the signed in user is the owner of the booking being checked
     if request.user.id !=  user.id:
@@ -197,7 +197,7 @@ def buyer_booking(request, id, user_id):
     try:
         booking = Booking.objects.get(pk=id, buyer=user)
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
         serializer = BookingSerializer(booking)
