@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
+from .serializers import UserSerializer
 
 # Create your views here.
 
@@ -34,9 +35,10 @@ def register(request):
                 "message": "email already taken."
             }, status=status.HTTP_409_CONFLICT)
         login(request, user)
+        serializer = UserSerializer(user)
         token=Token.objects.get(user=user)
         key=token.key
-        return Response({"message":"Registered Successfully","token":key}, status=status.HTTP_200_OK)
+        return Response({"message":"Registered Successfully","data":serializer.data, "token":key}, status=status.HTTP_200_OK)
     else:
         return Response({"message":"Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -55,12 +57,13 @@ def sign_in(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            serializer = UserSerializer(user)
             try:
                 token=Token.objects.get(user=user)
                 key=token.key
             except ObjectDoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-            return Response({"message":"Logged in successfully","token":key}, status=status.HTTP_200_OK)
+            return Response({"message":"Logged in successfully","data":serializer.data, "token":key}, status=status.HTTP_200_OK)
         else:
             return Response({
                 "message": "Invalid email and/or password."
