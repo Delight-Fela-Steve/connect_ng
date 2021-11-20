@@ -7,11 +7,14 @@ class Service(models.Model):
     name = models.CharField(max_length=56)
     description = models.TextField()
     price = models.DecimalField(max_digits = 10, decimal_places = 2)
-    starred = models.IntegerField(max_length=1, blank=True, null=True)
+    location = models.CharField(max_length=56, blank=True, null=False)
+    starred = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    category = models.ManyToManyField('Category', related_name="category")
 
     def __str__(self):
         return self.name
+
 
 class Booking(models.Model):
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookings")
@@ -23,4 +26,13 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.service.name
+
+class Category(models.Model):
+    name=models.CharField(max_length=56)
+
+    class Meta:
+        verbose_name_plural="Categories"
+
+    def __str__(self):
+        return self.name
 
