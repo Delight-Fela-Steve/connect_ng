@@ -12,7 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     seller = serializers.StringRelatedField()
-    category = CategorySerializer(many=True, read_only=True)
+    category = CategorySerializer(many=True)
 
     class Meta:
         model = Service
