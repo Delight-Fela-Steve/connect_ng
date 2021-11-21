@@ -85,7 +85,13 @@ def user_services(request, user_id):
         serializer = ServiceSerializer(service, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            service = Service.objects.get(id=serializer.data["id"])
+            for category in request.data["category"]:
+                name = Category.objects.get(name=category["name"])
+                print(type(name))
+                service.category.add(name)
+            serializer_modified = ServiceSerializer(service)
+            return Response(serializer_modified.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET","PUT", "DELETE"])

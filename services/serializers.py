@@ -12,12 +12,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     seller = serializers.StringRelatedField()
-    category = CategorySerializer(many=True)
+    category = CategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Service
         fields = '__all__'
-        
+        depth = 1
+
+
 class ServiceListingField(serializers.RelatedField):
     def to_representation(self, value):
         return f"{value.description}"
